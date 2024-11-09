@@ -55,11 +55,11 @@ def test_example_transform(spark):
     assert result is not None
 
 if __name__ == "__main__":
-    # Manual execution of tests
-    spark = start_spark("TestApp")
+    # Manual execution of tests without redefining `spark`
+    spark_session = start_spark("TestApp")
     test_extract()
-    test_load_data(spark)
-    test_describe(spark)
-    test_query(spark)
-    test_example_transform(spark)
-    end_spark(spark)
+    test_load_data(spark_session)
+    test_describe(spark_session)
+    test_query(spark_session)
+    test_example_transform(spark_session)
+    end_spark(spark_session)

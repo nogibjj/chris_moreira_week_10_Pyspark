@@ -30,17 +30,17 @@ In this project, we set up a PySpark environment to process and analyze a large 
 ![image](https://github.com/user-attachments/assets/65f0f13e-7555-4fb3-b20b-b17f8ef84e67)
 
 # Results Snapshot
-Describe Result
+# Describe Result
 ![image](https://github.com/user-attachments/assets/e45dad13-3410-4fc6-b32b-1b32e94dccf1)
 
-Load Data Result
+# Load Data Result
 ![image](https://github.com/user-attachments/assets/bdb6ed6e-17bd-4582-9820-84ab14ab80d2)
 
-Loaded Data Preview
+# Loaded Data Preview
 ![image](https://github.com/user-attachments/assets/bee05666-c3a1-46af-acec-73f34adc2972)
 
-Query Result
+# Query Result
 ![image](https://github.com/user-attachments/assets/02c22086-5d42-47bc-8484-fe29697e9fad)
 
-Transform Operation Output
+# Transform Operation Output
 ![image](https://github.com/user-attachments/assets/7259513f-5577-454e-9f41-cf62eea04969)

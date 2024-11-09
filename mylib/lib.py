@@ -1,6 +1,5 @@
 import os
 import requests
-import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.types import (
@@ -16,7 +15,6 @@ def start_spark(app_name="SpotifyApp"):
 
 def end_spark(spark):
     spark.stop()
-    return "Stopped Spark session"
 
 def extract(url, file_path, directory="data"):
     if not os.path.exists(directory):
@@ -29,7 +27,7 @@ def extract(url, file_path, directory="data"):
 def load_data(spark, data="data/Spotify_Most_Streamed_Songs.csv"):
     schema = StructType([
         StructField("track_name", StringType(), True),
-        StructField("artist(s)_name", StringType(), True),
+        StructField("artist_name", StringType(), True),
         StructField("artist_count", IntegerType(), True),
         StructField("released_year", IntegerType(), True),
         StructField("released_month", IntegerType(), True),
@@ -40,24 +38,16 @@ def load_data(spark, data="data/Spotify_Most_Streamed_Songs.csv"):
         StructField("in_apple_playlists", IntegerType(), True),
         StructField("key", StringType(), True),
         StructField("mode", StringType(), True),
-        StructField("danceability_%", IntegerType(), True),
-        StructField("valence_%", IntegerType(), True),
-        StructField("energy_%", IntegerType(), True),
-        StructField("acousticness_%", IntegerType(), True),
-        StructField("instrumentalness_%", IntegerType(), True),
-        StructField("liveness_%", IntegerType(), True),
-        StructField("speechiness_%", IntegerType(), True),
+        StructField("danceability_percent", IntegerType(), True),
+        StructField("valence_percent", IntegerType(), True),
+        StructField("energy_percent", IntegerType(), True),
+        StructField("acousticness_percent", IntegerType(), True),
+        StructField("instrumentalness_percent", IntegerType(), True),
+        StructField("liveness_percent", IntegerType(), True),
+        StructField("speechiness_percent", IntegerType(), True),
         StructField("cover_url", StringType(), True)
     ])
     df = spark.read.option("header", "true").schema(schema).csv(data)
-    df = df.withColumnRenamed("artist(s)_name", "artist_name") \
-           .withColumnRenamed("danceability_%", "danceability_percent") \
-           .withColumnRenamed("valence_%", "valence_percent") \
-           .withColumnRenamed("energy_%", "energy_percent") \
-           .withColumnRenamed("acousticness_%", "acousticness_percent") \
-           .withColumnRenamed("instrumentalness_%", "instrumentalness_percent") \
-           .withColumnRenamed("liveness_%", "liveness_percent") \
-           .withColumnRenamed("speechiness_%", "speechiness_percent")
     df.limit(10).toPandas().to_csv(
         os.path.join(OUTPUT_DIR, "load_data_output.csv"), index=False)
     return df

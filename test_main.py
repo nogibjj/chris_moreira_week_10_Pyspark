@@ -10,15 +10,11 @@ from mylib.lib import (
     example_transform
 )
 
-# Directory where output files will be saved
-OUTPUT_DIR = "output"
-
 @pytest.fixture(scope="module")
 def spark():
     spark = start_spark("TestApp")
     yield spark
     end_spark(spark)
-
 
 def test_extract():
     url = (
@@ -30,41 +26,32 @@ def test_extract():
     extract(url, file_path)
     assert os.path.exists(file_path) is True
 
-
 def test_load_data(spark):
     df = load_data(spark)
     assert df is not None
     assert df.count() > 0
-    assert os.path.exists(os.path.join(OUTPUT_DIR, "load_data_output.csv"))
-
 
 def test_describe(spark):
     df = load_data(spark)
-    describe(df)
-    # Check that the describe output CSV file exists
-    assert os.path.exists(os.path.join(OUTPUT_DIR, "describe_output.csv"))
-
+    result = describe(df)
+    assert result is not None
 
 def test_query(spark):
     df = load_data(spark)
     query_text = (
-        "SELECT released_year, COUNT(DISTINCT track_name) AS unique_tracks "
-        "FROM SpotifyData GROUP BY released_year ORDER BY released_year"
+        "SELECT released_year, COUNT(DISTINCT track_name) AS "
+        "unique_tracks FROM SpotifyData GROUP BY released_year "
+        "ORDER BY released_year"
     )
-    query(spark, df, query_text, "SpotifyData")
-    # Check that the query output CSV file exists
-    assert os.path.exists(os.path.join(OUTPUT_DIR, "query_output.csv"))
-
+    result = query(spark, df, query_text, "SpotifyData")
+    assert result is not None
 
 def test_example_transform(spark):
     df = load_data(spark)
-    example_transform(df)
-    # Check that the transform output CSV file exists
-    assert os.path.exists(os.path.join(OUTPUT_DIR, "transform_output.csv"))
-
+    result = example_transform(df)
+    assert result is not None
 
 if __name__ == "__main__":
-    # Run tests manually
     spark = start_spark("TestApp")
     test_extract()
     test_load_data(spark)

@@ -10,6 +10,9 @@ from mylib.lib import (
     example_transform
 )
 
+# Directory where output files will be saved
+OUTPUT_DIR = "output"
+
 @pytest.fixture(scope="module")
 def spark():
     spark = start_spark("TestApp")
@@ -32,12 +35,14 @@ def test_load_data(spark):
     df = load_data(spark)
     assert df is not None
     assert df.count() > 0
+    assert os.path.exists(os.path.join(OUTPUT_DIR, "load_data_output.csv"))
 
 
 def test_describe(spark):
     df = load_data(spark)
-    result = describe(df)
-    assert result is None  # Assuming describe prints the result and returns None
+    describe(df)
+    # Check that the describe output CSV file exists
+    assert os.path.exists(os.path.join(OUTPUT_DIR, "describe_output.csv"))
 
 
 def test_query(spark):
@@ -46,14 +51,16 @@ def test_query(spark):
         "SELECT released_year, COUNT(DISTINCT track_name) AS unique_tracks "
         "FROM SpotifyData GROUP BY released_year ORDER BY released_year"
     )
-    result = query(spark, df, query_text, "SpotifyData")
-    assert result is None  # Assuming query prints the result and returns None
+    query(spark, df, query_text, "SpotifyData")
+    # Check that the query output CSV file exists
+    assert os.path.exists(os.path.join(OUTPUT_DIR, "query_output.csv"))
 
 
 def test_example_transform(spark):
     df = load_data(spark)
-    result = example_transform(df)
-    assert result is None  # Assuming example_transform prints the result and returns None
+    example_transform(df)
+    # Check that the transform output CSV file exists
+    assert os.path.exists(os.path.join(OUTPUT_DIR, "transform_output.csv"))
 
 
 if __name__ == "__main__":

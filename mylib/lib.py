@@ -1,27 +1,17 @@
 import os
 import requests
-import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.types import (
     StructType, StructField, IntegerType, StringType
 )
 
-LOG_FILE = "log_file.md"
+# Directory for saving CSV files
+OUTPUT_DIR = "output"
 
-def log_output(operation, output_df, query=None):
-    """Log DataFrame output with Markdown formatting."""
-    with open(LOG_FILE, "a") as file:
-        file.write(f"\n\n---\n\n### The operation is {operation}\n\n")
-        if query:
-            file.write(f"**The query is:**\n\n```\n{query}\n```\n\n")
-        pd.options.display.float_format = '{:.2f}'.format
-        formatted = output_df.limit(10).toPandas().to_markdown(
-            index=False, tablefmt="pipe"
-        )
-        file.write("**The truncated output is:**\n\n")
-        file.write(formatted)
-        file.write("\n\n")
+# Ensure the output directory exists
+if not os.path.exists(OUTPUT_DIR):
+    os.makedirs(OUTPUT_DIR)
 
 def start_spark(appName="SpotifyApp"):
     """Initialize Spark session"""
@@ -42,7 +32,7 @@ def extract(url, file_path, directory="data"):
     return file_path
 
 def load_data(spark, data="data/Spotify_Most_Streamed_Songs.csv"):
-    """Load data with schema and log initial preview"""
+    """Load data with schema and save initial preview as CSV"""
     schema = StructType([
         StructField("track_name", StringType(), True),
         StructField("artist(s)_name", StringType(), True),
@@ -74,34 +64,30 @@ def load_data(spark, data="data/Spotify_Most_Streamed_Songs.csv"):
            .withColumnRenamed("instrumentalness_%", "instrumentalness_percent") \
            .withColumnRenamed("liveness_%", "liveness_percent") \
            .withColumnRenamed("speechiness_%", "speechiness_percent")
-    log_output("load data", df.limit(10))
+    df.limit(10).toPandas().to_csv(os.path.join(OUTPUT_DIR, "load_data_output.csv"), index=False)
     return df
 
 def query(spark, df, query, name="SpotifyData"):
-    """Executes Spark SQL query and logs the output"""
+    """Executes Spark SQL query and saves the output as CSV"""
     df.createOrReplaceTempView(name)
     result_df = spark.sql(query)
-    log_output("query data", result_df.limit(10), query)
-    return result_df.show()
+    result_df.limit(10).toPandas().to_csv(os.path.join(OUTPUT_DIR, "query_output.csv"), index=False)
+    return result_df
 
 def describe(df):
-    """Generates descriptive statistics and logs the output"""
+    """Generates descriptive statistics and saves the output as CSV"""
     summary_df = df.describe()
-    log_output("describe data", summary_df.limit(10))
-    return summary_df.show()
+    summary_df.limit(10).toPandas().to_csv(os.path.join(OUTPUT_DIR, "describe_output.csv"), index=False)
+    return summary_df
 
 def example_transform(df):
-    """Categorize popularity based on streams"""
+    """Categorize popularity based on streams and save output as CSV"""
     df = df.withColumn(
         "Popularity_Category",
         F.when(F.col("streams") > 1000000000, "Ultra Popular")
-         .when((F.col("streams") > 500000000) &
-               (F.col("streams") <= 1000000000),
-               "Very Popular")
-         .when((F.col("streams") > 100000000) &
-               (F.col("streams") <= 500000000),
-               "Popular")
+         .when((F.col("streams") > 500000000) & (F.col("streams") <= 1000000000), "Very Popular")
+         .when((F.col("streams") > 100000000) & (F.col("streams") <= 500000000), "Popular")
          .otherwise("Less Popular")
     )
-    log_output("transform data", df.limit(10))
-    return df.show()
+    df.limit(10).toPandas().to_csv(os.path.join(OUTPUT_DIR, "transform_output.csv"), index=False)
+    return df

@@ -13,6 +13,8 @@ In this project, we set up a PySpark environment to process and analyze a large 
 - describe: produces a data summary each attribute of the raw dataset.
 - example_transform: generates column for Music Popularity to the data set based on stream count (see below for details)
 
+# Repository Schema
+![image](https://github.com/user-attachments/assets/58ff8c6a-3b7d-44c0-ae3c-680e1bc36a81) 
 
 # Summary of Pyspark Operations
 Data Transformation with Pyspark
@@ -36,7 +38,8 @@ SELECT released_year, COUNT(DISTINCT track_name) AS
 unique_tracks FROM SpotifyData GROUP BY released_year 
 ORDER BY released_year
 ```
-# Project Schema
+
+# Project Structure
 ![image](https://github.com/user-attachments/assets/65f0f13e-7555-4fb3-b20b-b17f8ef84e67)
 
 # Results Snapshot

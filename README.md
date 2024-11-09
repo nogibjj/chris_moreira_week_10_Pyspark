@@ -2,7 +2,7 @@
 
 # PySpark Operations
 Data Transformation with Pyspark
-```python
+```PySpark
     df = df.withColumn(
         "Popularity_Category",
         F.when(F.col("streams") > 1000000000, "Ultra Popular")
